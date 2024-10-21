@@ -128,7 +128,7 @@ def encode_curl_command(command):
 
 
 def decode_curl_command(encoded_command):
-    decoded = json.loads(encoded_command).strip('"')
+    decoded = json.loads(encoded_command)
     return f"{decoded}"
 
 
@@ -251,7 +251,7 @@ def edit_service(service_id):
         return redirect(url_for('admin_page'))
 
     service = conn.execute('SELECT * FROM services WHERE id = ?', (service_id,)).fetchone()
-    decoded_command = decode_curl_command(service['curl_command'])
+    decoded_command = decode_curl_command(service['curl_command']).strip('"')
     conn.close()
     return render_template('edit.html', service=service, decoded_command=decoded_command)
 
