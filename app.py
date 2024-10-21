@@ -128,7 +128,8 @@ def encode_curl_command(command):
 
 
 def decode_curl_command(encoded_command):
-    return json.loads(encoded_command)
+    decoded = json.loads(encoded_command).strip('"')
+    return f"{decoded}"
 
 
 @app.context_processor
@@ -274,6 +275,26 @@ def run_tests():
 
     for service in services:
         status_data = check_status_for_service(service)
+
+        if not status_data['is_up']:
+            uptime_logs = conn.execute(
+                'SELECT timestamp FROM uptimes WHERE service_id = ? AND status = 1 ORDER BY timestamp DESC LIMIT 1',
+                (service['id'],)
+            ).fetchone()
+
+            last_up = uptime_logs['timestamp'] if uptime_logs else None
+
+            if last_up == None:
+                continue  # Skipping services that was never alive to not distrube
+
+            message = (
+                f"Service {service['name']} is down!\n"
+                f"Last checked: {time.ctime(status_data['timestamp'])}\n"
+                f"Last up: {time.ctime(last_up) if last_up else 'Unknown'}"
+            )
+            requests.post(os.getenv('WEBHOOK_URL'), json={"text": message})
+
+        log_uptime(conn, service['id'], int(status_data['is_up']))
         data_total.append(status_data)
     return jsonify(data_total)
     # return redirect(url_for('status_page'))
