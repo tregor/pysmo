@@ -91,7 +91,7 @@ def monitor_services():
         services = conn.execute('SELECT * FROM services').fetchall()
 
         for service in services:
-            status_data = check_status_for_service(service)
+            status_data = check_status_for_service(service, os.getenv('CHECK_INTERVAL', 30))
 
             if not status_data['is_up']:
                 uptime_logs = conn.execute(
@@ -251,7 +251,7 @@ def edit_service(service_id):
         return redirect(url_for('admin_page'))
 
     service = conn.execute('SELECT * FROM services WHERE id = ?', (service_id,)).fetchone()
-    decoded_command = decode_curl_command(service['curl_command']).strip('"')
+    decoded_command = service['curl_command'].strip('"')
     conn.close()
     return render_template('edit.html', service=service, decoded_command=decoded_command)
 
@@ -274,7 +274,7 @@ def run_tests():
     data_total = []
 
     for service in services:
-        status_data = check_status_for_service(service)
+        status_data = check_status_for_service(service, os.getenv('CHECK_INTERVAL', 30))
 
         if not status_data['is_up']:
             uptime_logs = conn.execute(
