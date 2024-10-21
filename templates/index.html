@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Status Monitor{% endblock %}
+
+{% block content %}
+<h1>Status Monitor</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for service in services %}
+            <tr>
+                <td>{{ service['name'] }}</td>
+                <td>{{ 'Up' if service['status'] == 1 else 'Down' }}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<form action="{{ url_for('run_tests') }}" method="post" class="mt-2" target="_blank">
+    <button type="submit" class="btn btn-primary">Run Tests</button>
+</form>
+{% endblock %}

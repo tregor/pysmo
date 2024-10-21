@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+
+{% block title %}History{% endblock %}
+
+{% block content %}
+<h1>History</h1>
+
+<!-- Форма для фильтрации -->
+<form class="form-inline mb-3">
+    <div class="form-group mr-2">
+        <label for="serviceFilter" class="mr-2">Filter by Service:</label>
+        <select id="serviceFilter" name="service" class="form-control">
+            <option value="">All</option>
+            {% for service in unique_services %}
+                <option value="{{ service }}" {% if service == filter_params.service %}selected{% endif %}>{{ service['name'] }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group mr-2">
+        <label for="statusFilter" class="mr-2">Filter by Status:</label>
+        <select id="statusFilter" name="status" class="form-control">
+            <option value="">All</option>
+            <option value="1" {% if filter_params.status == "1" %}selected{% endif %}>Up</option>
+            <option value="0" {% if filter_params.status == "0" %}selected{% endif %}>Down</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Apply</button>
+</form>
+
+<!-- Стильная таблица -->
+<table class="table table-hover table-sm">
+    <thead class="thead-light">
+        <tr>
+            <th>Service</th>
+            <th>Timestamp</th>
+            <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in uptimes %}
+            <tr>
+                <td>{{ record['name'] }}</td>
+                <td>{{ record['timestamp'] }}</td>
+                <td class="{{ 'text-success' if record['status'] == 1 else 'text-danger' }}">
+                    {{ 'Up' if record['status'] == 1 else 'Down' }}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Пагинация -->
+<nav aria-label="Page navigation example">
+    <ul class="pagination justify-content-center">
+        {% if page > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('history_page', page=page-1, service=filter_params.service, status=filter_params.status) }}">Previous</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Previous</span>
+            </li>
+        {% endif %}
+
+        {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('history_page', page=p, service=filter_params.service, status=filter_params.status) }}">{{ p }}</a>
+            </li>
+        {% endfor %}
+
+        {% if page < total_pages %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('history_page', page=page+1, service=filter_params.service, status=filter_params.status) }}">Next</a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">Next</span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endblock %}

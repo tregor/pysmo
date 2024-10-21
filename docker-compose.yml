@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  pysmo_webgui:
+    build: .
+    ports:
+      - "${APP_PORT:-5000}:5000"  # Значения по умолчанию
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_ENV=development
+      - APP_KEY=${APP_KEY:-default_app_key}
+      - APP_HOST=${APP_HOST:-0.0.0.0}
+      - APP_PORT=${APP_PORT:-5000}
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASS=${ADMIN_PASS:-secret}
+      - CHECK_INTERVAL=${CHECK_INTERVAL:-60}
+      - WEBHOOK_URL=${WEBHOOK_URL:-}
+    env_file:
+      - .env

@@ -1,0 +1,4 @@
+requests~=2.32.3
+Flask~=3.0.3
+Flask-BasicAuth~=0.2.0
+python-dotenv
