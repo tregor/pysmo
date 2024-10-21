@@ -11,7 +11,7 @@ from flask import Flask, render_template, request, redirect, url_for, session, j
 from flask_basicauth import BasicAuth
 
 app = Flask(__name__)
-app.secret_key = os.getenv('APP_KEY')
+app.secret_key = os.getenv('FLASK_KEY')
 app.config['BASIC_AUTH_USERNAME'] = os.getenv('ADMIN_USER')
 app.config['BASIC_AUTH_PASSWORD'] = os.getenv('ADMIN_PASS')
 basic_auth = BasicAuth(app)

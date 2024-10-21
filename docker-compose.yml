@@ -4,12 +4,12 @@ services:
   pysmo_webgui:
     build: .
     ports:
-      - "${APP_PORT:-5000}:5000"  # Значения по умолчанию
+      - "${APP_PORT:-5000}:5000"
     volumes:
       - .:/app
     environment:
       - FLASK_ENV=development
-      - APP_KEY=${APP_KEY:-default_app_key}
+      - FLASK_KEY=${FLASK_KEY:-default_app_key}
       - APP_HOST=${APP_HOST:-0.0.0.0}
       - APP_PORT=${APP_PORT:-5000}
       - ADMIN_USER=${ADMIN_USER:-admin}
